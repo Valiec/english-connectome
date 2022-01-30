@@ -1,3 +1,5 @@
+from copy import deepcopy
+
 # loads definitions from data file
 # for testing, definitions are in one file, where a word and its definition are on one line,
 # with the first word in the line being the headword
@@ -23,7 +25,7 @@ def clean_word(raw_word):
 
 # cleans out common and duplicate words (I could turn off deduplication if we want the duplication)
 def clean_entries(word_data_raw, exclusions):
-    word_data = []
+    word_data = {}
     for headword in word_data_raw.keys():
         definition_str = word_data_raw[headword]
         definition_wordlist = definition_str.split()
@@ -72,14 +74,30 @@ def load_exclusions(exclusions_filename):
     return exclusions
 
 
+# this removes instances of a word being linked to itself
+def prune_self_links(links_map):
+    pruned_links = {}
+    for headword in links_map.keys():
+        for linked_word in links_map[headword]:
+            if linked_word != headword:  # not a self-link
+                if headword in pruned_links:  # already a link from this headword
+                    pruned_links[headword].append(linked_word)
+                else:
+                    pruned_links[headword] = [linked_word]
+    return pruned_links
+
+
 # this currently only excludes articles for testing, but will handle all exclusions
 exclusions_list = load_exclusions("exclusions.txt")
 
-definitions_raw = load_entries("words.txt") # load definitions
+definitions_raw = load_entries("words.txt")  # load definitions
 
-definitions_cleaned = clean_entries(definitions_raw, exclusions_list) # clean definitions
+definitions_cleaned = clean_entries(definitions_raw, exclusions_list)  # clean definitions
 
-semantic_links = process_words(definitions_cleaned) # find links
+semantic_links_raw = process_words(definitions_cleaned)  # find links
+
+semantic_links = prune_self_links(semantic_links_raw)  # get rid of words linking to themselves
 
 for word in semantic_links.keys(): # debug code to output all raw links
-    print(word + " -> " + semantic_links[word])
+    for dest_word in semantic_links[word]:
+        print(word + " -> " + dest_word)
