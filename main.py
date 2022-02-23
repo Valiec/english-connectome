@@ -23,6 +23,7 @@ def clean_word(raw_word, headwords):
     # TODO handle diacritics
     regex = re.compile('[^a-z]')  # remove all non-alphabetic characters
     cleaned_word = regex.sub("", lower_word)
+    # TODO check if punctuation
 
     if cleaned_word.endswith("s") and cleaned_word[:-1] in headwords:  # potential plural
         cleaned_word = cleaned_word[:-1]
@@ -34,6 +35,8 @@ def clean_word(raw_word, headwords):
         cleaned_word = cleaned_word[:-2]
     else:
         pass
+
+    # words ending in -er, -ly, or similar are going to have their own entries
 
     return cleaned_word
 
