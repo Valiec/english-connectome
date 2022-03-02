@@ -14,6 +14,7 @@ semantic_links_raw = process_words(definitions_cleaned)  # find links
 
 semantic_links = prune_self_links(semantic_links_raw)  # get rid of words linking to themselves
 
-for word in semantic_links.keys():  # debug code to output all raw links
-    for dest_word in semantic_links[word]:
-        print(word + " -> " + dest_word)
+with open("links_out.csv", "w") as f:
+    for word in semantic_links.keys():  # debug code to output all raw links
+        for dest_word in semantic_links[word]:
+            f.write(word+","+dest_word+"\n")
