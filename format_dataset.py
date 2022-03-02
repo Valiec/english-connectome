@@ -1,4 +1,5 @@
 import os
+import sys
 from wiktionary_reader import *
 
 words_data = {}
@@ -8,7 +9,7 @@ synonyms_map = {}
 alt_spellings_map = {}
 forms_map = {}
 
-base_path = "/Users/valiec/Desktop/word_data/English"
+base_path = sys.argv[1]
 
 dirs = os.listdir(base_path)
 dirs.sort()
