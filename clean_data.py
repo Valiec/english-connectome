@@ -1,9 +1,10 @@
 import re
 
 
-# cleans up extra punctuation and formatting from a word
-# will strip newlines, spaces, tabs, and hyphens, and convert word to lowercase
 def clean_word(raw_word, headwords):
+    """cleans up extra punctuation and formatting from a word
+
+    will strip newlines, spaces, tabs, and hyphens, and convert word to lowercase"""
     lower_word = raw_word.lower()
     # TODO handle diacritics
     regex = re.compile('[^a-z]')  # remove all non-alphabetic characters
@@ -25,8 +26,9 @@ def clean_word(raw_word, headwords):
     return cleaned_word
 
 
-# cleans out common and duplicate words (I could turn off deduplication if we want the duplication)
 def clean_entries(word_data_raw, exclusions, headwords):
+    """cleans out common and duplicate words"""
+    # I could turn off deduplication if we want the duplication
     word_data = {}
     for headword in word_data_raw.keys():
         definition_str = word_data_raw[headword]
