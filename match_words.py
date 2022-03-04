@@ -1,14 +1,15 @@
-# checks for 2 words matching (placeholder for handling inflection)
-# returns true if match found for word1 in word2_list, false if not
 def check_word_match(word1, word2_list):
+    """checks for 2 words matching (placeholder for handling inflection)
+
+    returns true if match found for word1 in word2_list, false if not"""
     if word1 in word2_list:
         return True
 
     return False
 
 
-# actually processes the words and definitions for links
 def process_words(definition_data):
+    """actually processes the words and definitions for links"""
     links_data = {}  # used as a map of links between words
 
     headwords = definition_data.keys()  # feels more efficient to get this once
@@ -24,8 +25,8 @@ def process_words(definition_data):
     return links_data
 
 
-# this removes instances of a word being linked to itself
 def prune_self_links(links_map):
+    """this removes instances of a word being linked to itself"""
     pruned_links = {}
     for headword in links_map.keys():
         for linked_word in links_map[headword]:

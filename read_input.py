@@ -1,10 +1,11 @@
 from clean_data import *
 
 
-# loads definitions from data file
-# for testing, definitions are in one file, where a word and its definition are on one line,
-# with the first word in the line being the headword
 def load_entries(words_filename, headwords_data):
+    """loads definitions from data file
+
+    definitions are in one file, where a word and its definition are on one line,
+    with the first word in the line being the headword"""
     wordlist_raw = {}
     # loads in the words and definitions
     with open(words_filename) as f:
@@ -16,9 +17,10 @@ def load_entries(words_filename, headwords_data):
     return wordlist_raw
 
 
-# loads exclusions from data file
-# exclusions are listed one per line
 def load_exclusions(exclusions_filename, headwords):
+    """loads exclusions from data file
+
+    exclusions are listed one per line"""
     exclusions = []
     with open(exclusions_filename) as f:
         for line in f:
