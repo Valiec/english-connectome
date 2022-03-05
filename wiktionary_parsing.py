@@ -2,6 +2,7 @@ import re
 
 
 def find_word_in_partial_template(tmpl, startind):
+    """takes a template string (minus the template name) and extracts the headword"""
     # print(tmpl)
     # print(startind)
     for arg in tmpl.split("|")[startind:]:
@@ -11,6 +12,7 @@ def find_word_in_partial_template(tmpl, startind):
 
 
 def handle_wikitemplate(wikitemplate):  # TODO cleanup
+    """Process a wikitemplate and locate any important information in it"""
     # print("template found: "+wikitemplate)
     args = wikitemplate.replace("{", "").replace("}", "").split("|")
     # print("args: "+str(args))
@@ -42,12 +44,14 @@ def handle_wikitemplate(wikitemplate):  # TODO cleanup
 
 
 def handle_wikilink(wikilink):
+    """Process a wikilink to produce the word that would have been displayed on Wiktionary"""
     if "|" in wikilink:  # handle piped links
         wikilink = wikilink.split("|")[1]
     return wikilink.replace("[", "").replace("]", "")
 
 
 def parse_wikitemplates(definition):
+    """Parse a definition string for wikitemplates"""
     processed_definition = ""
     wikitemplate_level = 0
     brace_state = 0
@@ -98,6 +102,7 @@ def parse_wikitemplates(definition):
 
 
 def parse_wikilinks(definition):
+    """Parse a definition string for wikilinks"""
     processed_definition = ""
     in_wikilink = False
     brace_state = 0

@@ -6,6 +6,7 @@ allowed_types = ["Noun", "Adjective", "Adverb", "Conjunction", "Preposition", "I
 
 def process_definition(headword, definition_raw, plurals_map, synonyms_map, forms_map, alt_spellings_map, words_data,
                        words_data_raw):
+    """Parses a Wiktionary definition and adds the relevant data to the maps passed in"""
     definition_split = definition_raw.split("\n")
     definition_preproc = ""
     for line in definition_split:
@@ -30,6 +31,8 @@ def process_definition(headword, definition_raw, plurals_map, synonyms_map, form
 
 def parse_file(filename, plurals_map, synonyms_map, forms_map, alt_spellings_map, words_data, words_data_raw):
     # data = None
+
+    """Parses a Wiktionary json file and adds the relevant data to the maps passed in"""
 
     with open(filename) as data_file:
         data = json.load(data_file)
