@@ -1,12 +1,13 @@
 from read_input import *
 from clean_data import *
 from match_words import *
+import sys
 
 headwords_list = []
-definitions_raw = load_entries("words.txt", headwords_list)  # load definitions
+definitions_raw = load_entries(sys.argv[1], headwords_list)  # load definitions
 
 # this currently only excludes articles for testing, but will handle all exclusions
-exclusions_list = load_exclusions("exclusions.txt", headwords_list)
+exclusions_list = load_exclusions("stopwords-en.txt", headwords_list)
 
 definitions_cleaned = clean_entries(definitions_raw, exclusions_list, headwords_list)  # clean definitions
 
