@@ -109,8 +109,10 @@ def bfs(start_node, adj_matrix, node_count):
 def bfs_all(adj_matrix, node_count):
     """Runs bfs() starting from each node in the graph iteratively."""
     for i in range(node_count):
-        print("Processing node "+str(i)+" of "+str(node_count))
+        if i % 10 == 0:
+            print("\nProcessing node "+str(i)+" of "+str(node_count), end="")  # logging
         adj_matrix = bfs(i, adj_matrix, node_count)
+    print("")
     return adj_matrix
 
 
@@ -133,29 +135,40 @@ def print_adjmatrix(adj_matrix, keys_list):
         i += 1
 
 
-def output_distances(adj_matrix):
+def output_distances(adj_matrix, filename):
     """Outputs the distances in CSV format."""
-    rownum = 0
-    for row in adj_matrix:
-        colnum = 0
-        for col in row:
-            if rownum < colnum and col != 0:
-                print(node_list[rownum] + "," + node_list[colnum] + "," + str(col))
-            colnum += 1
-        rownum += 1
+    with open(filename, "w") as outfile:
+        rownum = 0
+        for row in adj_matrix:
+            colnum = 0
+            for col in row:
+                if rownum < colnum and col != 0:
+                    outfile.write(node_list[rownum] + "," + node_list[colnum] + "," + str(col)+"\n")
+                colnum += 1
+            rownum += 1
 
 
 adjlist_input = {}
 
+node_list = []
+
 with open(sys.argv[1]) as f:
+    line_num = 0
     for line in f:
+        if line_num % 10000 == 0:
+            print("Reading line "+str(line_num))
         edge = line.split(",")
         if edge[0].strip() not in adjlist_input:
             adjlist_input[edge[0].strip()] = [edge[1].strip()]
         else:
             adjlist_input[edge[0].strip()].append(edge[1].strip())
+        if edge[0].strip() not in node_list:
+            node_list.append(edge[0].strip())
+        if edge[1].strip() not in node_list:
+            node_list.append(edge[1].strip())
+        line_num += 1
 
-node_list = get_nodelist(adjlist_input)
+# node_list = get_nodelist(adjlist_input)
 
 node_index_map = map_nodes_to_indices(node_list)
 
@@ -165,4 +178,4 @@ nnodes = len(node_index_map.keys())
 
 adjmatrix_input = bfs_all(adjmatrix_input, nnodes)
 
-output_distances(adjmatrix_input)
+output_distances(adjmatrix_input, sys.argv[1].replace(".csv", ".distances.csv"))
