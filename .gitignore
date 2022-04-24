@@ -10,3 +10,5 @@ __pycache__/**
 __pycache__/*
 logs/**
 logs/*
+rawData/word_data/*
+rawData/word_data/**
