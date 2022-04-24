@@ -7,9 +7,11 @@ edge_list = []
 
 node_set = set()
 
+
 def stderr_log(text):
     """Convenience function for me to log to stderr without forgetting the newline."""
-    sys.stderr.write(text+"\n")
+    sys.stderr.write(text + "\n")
+
 
 with open(sys.argv[1]) as f:  # read in file
     line_num = 0
@@ -42,19 +44,18 @@ if start_node.strip() not in node_set:  # start node invalid or nonexistent
         print(entry, entry == start_node)
     sys.exit(-1)
 
-
 radius = int(sys.argv[3])  # max distance away from the central node
 
-filter = None
+node_filter = None
 
 chance = float(sys.argv[4])  # fraction of nodes to retain when downsampling
 
 if len(sys.argv) >= 6:  # optional filter file to restrict nodes
-    filter = set()
+    node_filter = set()
     with open(sys.argv[5]) as f:
         for line in f:
-            if line.strip() not in filter:
-                filter.add(line.strip())
+            if line.strip() not in node_filter:
+                node_filter.add(line.strip())
 
 nodes = set()
 
@@ -62,17 +63,17 @@ nodes_to_test = [start_node]
 
 i = 0
 
-while i < radius:  #loop over nodes and select nodes within radius of starting node
+while i < radius:  # loop over nodes and select nodes within radius of starting node
     nodes_to_test_next = []
     for node in nodes_to_test:
-        if filter == None or node in filter:  # only select nodes passing filter
+        if node_filter is None or node in node_filter:  # only select nodes passing filter
             if node in adjlist_input:  # if node has edges recorded
                 nodes_to_test_next.extend(adjlist_input[node])  # add children to list of nodes to visit
                 if random.random() < chance:  # downsampling
                     nodes.add(node)
     nodes_to_test = nodes_to_test_next
-    i+=1
+    i += 1
 
 for edge in edge_list:  # output edges
     if (edge[0].strip() in nodes) and (edge[1].strip() in nodes):  # if edge includes only nodes in sample
-        print(edge[0].strip()+", "+edge[1].strip())
+        print(edge[0].strip() + ", " + edge[1].strip())
