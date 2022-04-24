@@ -10,11 +10,15 @@ eng_keys = set()  # english term IDs
 
 stopwords = []  # stop words
 
-type_exclusions = {"has_prefix", "has_prefix_with_root", "has_suffix", "has_suffix_with_root", "has_confix",
-                   "has_affix", "compound_of"}
+type_exclusions = set()
 
 exclusions_method = "exclude"
 # "include" accepts only lines with types in type_exclusions, "exclude" accepts only lines with types that are not
+
+if len(sys.argv) > 4:
+    exclusions_method = sys.argv[3]
+    for entry in sys.argv[4:]:
+        type_exclusions.add(entry)
 
 with open("stopwords-en.txt") as f:  # read stop words
     for line in f:
@@ -86,7 +90,7 @@ i = -1
 
 name_prefix = ""
 
-if len(sys.argv) >= 3:  # get prefix if specified
+if sys.argv[2] != "-":  # using - as placeholder for "no prefix"
     name_prefix = "_" + sys.argv[2]
 
 with open("data/etym_links" + name_prefix + ".csv", "w") as f:
