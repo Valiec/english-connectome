@@ -6,7 +6,6 @@ def clean_word(raw_word, headwords):
 
     will strip newlines, spaces, tabs, and hyphens, and convert word to lowercase"""
     lower_word = raw_word.lower()
-    # TODO handle diacritics
     regex = re.compile('[^a-z]')  # remove all non-alphabetic characters
     cleaned_word = regex.sub("", lower_word)
 

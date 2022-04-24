@@ -1,13 +1,23 @@
 import sys
 
-term_ids = {}
+term_ids = {} # map of term IDs to terms
 
-group_lines = []
+group_lines = [] # lines with "group_affix_root", "group_related_root", or "group_derived_root"
 
-links = {}
-half_links = {}
-half_links_reverse = {}
-eng_keys = set()
+half_links = {} # eng -> non-eng links
+half_links_reverse = {} # non-eng -> eng links
+eng_keys = set() # english term IDs
+
+stopwords = [] # stop words
+
+type_exclusions = set(["has_prefix", "has_prefix_with_root", "has_suffix", "has_suffix_with_root", "has_confix", "has_affix", "compound_of"])
+
+exclusions_method = "exclude" # "include" accepts only lines with types in type_exclusions, "exclude" accepts only lines with types that are not
+
+with open("stopwords-en.txt") as f: # read stop words
+    for line in f:
+        stopwords.append(line.strip().lower())
+
 i = -1
 with open(sys.argv[1]) as f:
     for line_raw in f:
@@ -20,84 +30,88 @@ with open(sys.argv[1]) as f:
         if i % 100 == 0:
             print("processing line " + str(i) + "...")
         # print(line)
-
         if line[0].strip() not in term_ids.keys():
             term_ids[line[0].strip()] = [line[1], line[2]]
 
         if line[4].strip() not in term_ids.keys():
             term_ids[line[4].strip()] = [line[5], line[6]]
 
-        if line[3] == "group_affix_root" or line[3] == "group_related_root" or line[3] == "group_derived_root":
+        if line[3] == "group_affix_root" or line[3] == "group_related_root" or line[3] == "group_derived_root": # skip group lines
             group_lines.append(line)
+            continue
+
+        if line[3] in type_exclusions and exclusions_method == "exclude": # skip all lines of types in type_exclusions
+            sys.stderr.write("Skipping line '" + line_raw.strip() + "' with excluded type "+line[3].strip()+"\n")
+            continue
+
+        if line[3] not in type_exclusions and exclusions_method == "include": # skip all lines of types not in type_exclusions
+            sys.stderr.write("Skipping line '" + line_raw.strip() + "' with excluded type "+line[3].strip()+"\n")
             continue
 
         if line[2].strip() == "" or line[6].strip() == "":  # blank entry
             sys.stderr.write("Skipping line '" + line_raw.strip() + "' with missing data\n")
             continue
+            
+        if line[1] == "English" and line[2].strip().lower() in stopwords:
+            #sys.stderr.write("Skipping line '" + line_raw.strip() + "' with stop word "+line[2].strip().lower()+"\n") # logging deactivated as it is excessive
+            continue
+        
 
-        if line[1] != "English" and line[5] == "English" and False:
-            if line[0] not in half_links_reverse.keys():
-                half_links_reverse[line[0]] = []
-            # half_links[line[0]].append([line[6], line[5], line[3], False])  # forward
-            if line[4] not in half_links.keys():
-                half_links[line[4]] = []
-            half_links_reverse[line[0]].append([line[4], line[5], line[3], False])  # forward
-            half_links[line[4]].append([line[0], line[5], line[3], True])  # reverse
-            eng_keys.add(line[4])
-            # half_links_reverse[line[6]].append([line[2], line[5], line[3], False])  # forward
+        if line[5] == "English" and line[6].strip().lower() in stopwords:
+            #sys.stderr.write("Skipping line '" + line_raw.strip() + "' with stop word "+line[6].strip().lower()+"\n") # logging deactivated as it is excessive
+            continue
+
         elif line[5] != "English" and line[1] == "English":
-            if line[4] not in half_links_reverse.keys():
+            if line[4] not in half_links_reverse.keys(): # add term ID for non-english word to half_links_reverse
                 half_links_reverse[line[4]] = []
-            if line[0] not in half_links.keys():
+            if line[0] not in half_links.keys(): # add term ID for english word to half_links
                 half_links[line[0]] = []
             half_links_reverse[line[4]].append([line[0], line[1], line[3], True])  # reverse
             half_links[line[0]].append([line[4], line[1], line[3], True])  # forward
-            eng_keys.add(line[0])
+            eng_keys.add(line[0]) # list english term ID in eng_keys
         else:
-            if line[2] not in links.keys():
-                links[line[2]] = []
-            links[line[2]].append(line[6])
+            pass
         i = i + 1
-print(len(eng_keys))
+print(len(eng_keys)) # logging
 
 key_lines = []
 
 i = -1
 
-with open("etym_links_out.csv", "w") as f:
+name_prefix = ""
+
+if len(sys.argv) >= 3: # get prefix if specified
+    name_prefix = "_"+sys.argv[2]
+
+with open("data/etym_links"+name_prefix+".csv", "w") as f:
     for key in eng_keys:
         i += 1
-        if i % 10 == 0:
-            print("processing line " + str(i) + "...")
-        if key not in half_links:
+        if i % 10 == 0: # log every 10 lines output
+            print("Processing line " + str(i) + "...")
+        if key not in half_links: # if word has no links, skip
             continue
-        entries_for_word_debug_1 = {}
-        entries_for_word_debug_2 = {}
+        entries_for_foreign_word = {}
+        entries_for_eng_word = {}
         foreign_words = []
         # print("key is: "+str(term_ids[key]))
-        entry = "BAD"
-        for entry in half_links[key]:
-            foreign_words.append(entry[0])
-            entries_for_word_debug_1[entry[0]] = entry
-        for word in foreign_words:
-            if word not in half_links_reverse:
+        entry = "BAD" # placeholder value to catch errors
+        for entry in half_links[key]: # loop over links from word
+            foreign_words.append(entry[0]) # add to foreign words list
+            entries_for_foreign_word[entry[0]] = entry # store mapping of foreign words to link entries
+        for word in foreign_words: # iterate over foreign words
+            if word not in half_links_reverse: # if no link to an english word from here, skip
                 continue
             eng_words = []
-            entry_2 = "BAD"
-            for entry_2 in half_links_reverse[word]:
+            entry_2 = "BAD" # placeholder value to catch errors
+            for entry_2 in half_links_reverse[word]: # loop over links from foreign word
                 eng_words.append(entry_2[0])
-                entries_for_word_debug_2[entry_2[0]] = entry_2
-            for eng_word in eng_words:
-                if eng_word != key:
-                    # pass
-                    entry = entries_for_word_debug_1[word]
-                    entry_2 = entries_for_word_debug_2[eng_word]
+                entries_for_eng_word[entry_2[0]] = entry_2 # store mapping of english words to link entries
+            for eng_word in eng_words: # loop over english words
+                if eng_word != key: # do not store links of words to themselves
+                    # get actual entries for words, not term IDs
+                    entry = entries_for_foreign_word[word]
+                    entry_2 = entries_for_eng_word[eng_word]
+
+                    # output link
                     f.write(term_ids[key][1] + "," + term_ids[eng_word][1] + "," + term_ids[entry[0]][0] + "," +
                             term_ids[entry[0]][1] + "," + entry[2] + "," + entry_2[2] + "\n")
-
-# with open("etym_links_out.csv", "w") as f:
-#    #for word in half_links.keys():  # debug code to output all raw links
-#    #    for dest_word in half_links[word]:
-#    #        f.write(word+","+dest_word[0]+"\n")
-#    for line in key_lines:
-#        f.write(line)

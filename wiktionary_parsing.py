@@ -3,8 +3,6 @@ import re
 
 def find_word_in_partial_template(tmpl, startind):
     """takes a template string (minus the template name) and extracts the headword"""
-    # print(tmpl)
-    # print(startind)
     for arg in tmpl.split("|")[startind:]:
         if "=" not in arg and arg != "en":
             return arg
@@ -13,9 +11,7 @@ def find_word_in_partial_template(tmpl, startind):
 
 def handle_wikitemplate(wikitemplate):  # TODO cleanup
     """Process a wikitemplate and locate any important information in it"""
-    # print("template found: "+wikitemplate)
     args = wikitemplate.replace("{", "").replace("}", "").split("|")
-    # print("args: "+str(args))
 
     of_regex = re.compile(".* of$")
 
