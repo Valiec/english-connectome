@@ -2,23 +2,23 @@ import sys
 import multiprocessing
 from multiprocessing import Process
 from multiprocessing.shared_memory import SharedMemory
-import random
 
 import numpy
 
-DEPTH_LIMIT = 7 # constant
-NTHREADS = 8 # constant
+DEPTH_LIMIT = 7  # constant
+NTHREADS = 8  # constant
+
 
 class AdjacencyIterator:
     """An iterator for dividing the adjacency matrix into chunks for each process"""
-    mat = [] # the adjacency matrix
-    ind = 0 # index in the matrix
-    chunksize = 0 # the size of chunk to return
-    nodecount = 0 # the number of nodes in the graph
-    sharedmem_name = None # name of shared memory block
-    sharedmem_shape = None # shape of array for shared memory
-    sharedmem_dtype = None # data type for shared memory
-    nodes_included = None # the number of nodes actually included in the analysis
+    mat = []  # the adjacency matrix
+    ind = 0  # index in the matrix
+    chunksize = 0  # the size of chunk to return
+    nodecount = 0  # the number of nodes in the graph
+    sharedmem_name = None  # name of shared memory block
+    sharedmem_shape = None  # shape of array for shared memory
+    sharedmem_dtype = None  # data type for shared memory
+    nodes_included = None  # the number of nodes actually included in the analysis
 
     def __init__(self, adj_mat, chunk_size, node_count, included_nodes):
         self.mat = adj_mat
@@ -26,7 +26,8 @@ class AdjacencyIterator:
         self.chunksize = chunk_size
         self.node_count = node_count
 
-        # Based on example at https://docs.python.org/3/library/multiprocessing.shared_memory.html#module-multiprocessing.shared_memory
+        # Based on example at
+        # https://docs.python.org/3/library/multiprocessing.shared_memory.html#module-multiprocessing.shared_memory
 
         tmp_numpy_arr = numpy.array(adj_mat)
         sharedmem = SharedMemory(create=True, size=tmp_numpy_arr.nbytes)
@@ -44,13 +45,16 @@ class AdjacencyIterator:
         return self
 
     def __next__(self):
-        if self.ind < len(self.nodes_included): # if we aren't already off the end of the list
+        if self.ind < len(self.nodes_included):  # if we aren't already off the end of the list
             csize = self.chunksize
-            if self.ind+self.chunksize >= len(self.nodes_included): # if the chunk would be partly off the end of the list
-                csize = len(self.nodes_included)-self.ind # readjust chunk size to cut off at the end of the list
+            if self.ind + self.chunksize >= len(
+                    self.nodes_included):  # if the chunk would be partly off the end of the list
+                csize = len(self.nodes_included) - self.ind  # readjust chunk size to cut off at the end of the list
             self.ind += self.chunksize
-            return self.node_count, self.ind - self.chunksize, self.sharedmem_name, self.sharedmem_shape, self.sharedmem_dtype, csize, self.nodes_included # return big tuple of data
-        else: # off the end
+            data_tuple = (self.node_count, self.ind - self.chunksize, self.sharedmem_name, self.sharedmem_shape,
+                          self.sharedmem_dtype, csize, self.nodes_included)
+            return data_tuple  # return big tuple of data
+        else:  # off the end
             raise StopIteration
 
 
@@ -98,7 +102,7 @@ def map_nodes_to_indices(keys_list):
     return nodes_to_indices
 
 
-def adj_list_to_matrix(adj_list, keys_list, nodes_to_indices, nodes_included):
+def adj_list_to_matrix(adj_list, nodes_to_indices, nodes_included):
     """Converts the given adjacency list to an adjacency matrix.
 
     Nodes are placed in columns/rows according to their indices in nodes_to_indices."""
@@ -172,20 +176,19 @@ def bfs_helper(entry, lock, depth_limit):
     dtype = entry[4]
     chunksize = entry[5]
     nodes_included = entry[6]
-    print("Processing chunk from " + str(start_node) + " to " + str(start_node+chunksize-1))  # logging
+    print("Processing chunk from " + str(start_node) + " to " + str(start_node + chunksize - 1))  # logging
     for i in range(chunksize):
-        bfs(start_node+i, node_count, name, shape, dtype, lock, depth_limit)
-        print("Processed node " + str(start_node+i) + " of " + str(len(nodes_included)))  # logging
-    return None #adj_matrix_row
+        bfs(start_node + i, node_count, name, shape, dtype, lock, depth_limit)
+        print("Processed node " + str(start_node + i) + " of " + str(len(nodes_included)))  # logging
+    return None
 
 
 def bfs_all(adj_matrix, node_count, nodes_included):
     """Runs bfs() starting from each node in the graph iteratively."""
     print("Processing nodes...")
     lock = multiprocessing.Lock()
-    adj_mat_global = adj_matrix  # making *one* copy of this
     procs = []
-    adj_iter = AdjacencyIterator(adj_matrix, int(node_count/NTHREADS)+1, node_count, nodes_included)
+    adj_iter = AdjacencyIterator(adj_matrix, int(node_count / NTHREADS) + 1, node_count, nodes_included)
     for entry in adj_iter:
         proc = Process(target=bfs_helper, args=(entry, lock, DEPTH_LIMIT))
         procs.append(proc)
@@ -193,7 +196,8 @@ def bfs_all(adj_matrix, node_count, nodes_included):
     for proc in procs:
         proc.join()
 
-   # Based on example at https://docs.python.org/3/library/multiprocessing.shared_memory.html#module-multiprocessing.shared_memory
+    # Based on example at
+    # https://docs.python.org/3/library/multiprocessing.shared_memory.html#module-multiprocessing.shared_memory
 
     sharedmem = SharedMemory(name=adj_iter.sharedmem_name)
     adj_matrix_sh = numpy.ndarray(adj_iter.sharedmem_shape, dtype=adj_iter.sharedmem_dtype, buffer=sharedmem.buf)
@@ -208,9 +212,9 @@ def bfs_all(adj_matrix, node_count, nodes_included):
 
 def print_adjmatrix(adj_matrix, keys_list):
     """Prints the adjacency matrix to the console for debugging."""
-    print("  ", end="") # print a space so the header lines up
+    print("  ", end="")  # print a space so the header lines up
 
-    for node in keys_list: # print header
+    for node in keys_list:  # print header
         print(str(node) + " ", end="")
 
     print("\n", end="")
@@ -218,9 +222,9 @@ def print_adjmatrix(adj_matrix, keys_list):
     i = 0
 
     for row in adj_matrix:
-        print(keys_list[i] + " ", end="") # print "header" down left side
+        print(keys_list[i] + " ", end="")  # print "header" down left side
         for col in row:
-            print(str(col) + " ", end="") # print data
+            print(str(col) + " ", end="")  # print data
         print("\n", end="")
         i += 1
 
@@ -232,52 +236,57 @@ def output_distances(adj_matrix, filename, node_list):
         for row in adj_matrix:
             colnum = 0
             for col in row:
-                if rownum < colnum and col != 0: # only output each distance once and only output nonzero distances
+                if rownum < colnum and col != 0:  # only output each distance once and only output nonzero distances
                     outfile.write(node_list[rownum] + "," + node_list[colnum] + "," + str(col) + "\n")
                 colnum += 1
             rownum += 1
 
 
-if __name__ == '__main__': # to prevent each worker process from running this part
+if __name__ == '__main__':  # to prevent each worker process from running this part
 
     adjlist_input = {}
-    node_list = []
+    all_nodes = []
 
     with open(sys.argv[1]) as f:
         line_num = 0
         for line in f:
-            if line_num % 10000 == 0: # print log message every 10000 lines
+            if line_num % 10000 == 0:  # print log message every 10000 lines
                 print("Reading line " + str(line_num))
 
-            edge = line.split(",") # process csv line
+            edge = line.split(",")  # process csv line
 
-            if edge[0].strip() not in adjlist_input: # if node not in adj list
-                adjlist_input[edge[0].strip()] = [edge[1].strip()] # add node
+            if edge[0].strip() not in adjlist_input:  # if node not in adj list
+                adjlist_input[edge[0].strip()] = [edge[1].strip()]  # add node
             else:
-                adjlist_input[edge[0].strip()].append(edge[1].strip()) # add edge to node
+                adjlist_input[edge[0].strip()].append(edge[1].strip())  # add edge to node
 
-            if edge[0].strip() not in node_list: # add node to node list if not present
-                node_list.append(edge[0].strip())
-            if edge[1].strip() not in node_list: # add node to node list if not present
-                node_list.append(edge[1].strip())
+            if edge[0].strip() not in all_nodes:  # add node to node list if not present
+                all_nodes.append(edge[0].strip())
+            if edge[1].strip() not in all_nodes:  # add node to node list if not present
+                all_nodes.append(edge[1].strip())
             line_num += 1
 
-    included_node_names = [] # the list of nodes to include in the analysis
+    included_node_names = []  # the list of nodes to include in the analysis
 
-    with open(sys.argv[2]) as nodes_file: # read in the list of nodes to use
+    with open(sys.argv[2]) as nodes_file:  # read in the list of nodes to use
         for line in nodes_file:
             included_node_names.append(line.strip())
 
-    node_index_map = map_nodes_to_indices(included_node_names) # mapping node names to numeric indices for creation of adjacency matrix
+    node_index_map = map_nodes_to_indices(
+        included_node_names)  # mapping node names to numeric indices for creation of adjacency matrix
 
-    nnodes = len(node_index_map.keys()) # number of nodes
+    nnodes = len(node_index_map.keys())  # number of nodes
 
-    included_nodes = list(node_index_map.keys()) # list of node names
+    included_nodes_list = list(node_index_map.keys())  # list of node names
 
-    adjmatrix_input = adj_list_to_matrix(adjlist_input, node_list, node_index_map, included_node_names) # generate adjacency matrix
+    adjmatrix_input = adj_list_to_matrix(adjlist_input, node_index_map,
+                                         included_node_names)  # generate adjacency matrix
 
-    adjmatrix_input = bfs_all(adjmatrix_input, nnodes, included_nodes) # run the actual analysis
+    adjmatrix_input = bfs_all(adjmatrix_input, nnodes, included_nodes_list)  # run the actual analysis
 
-    output_distances(adjmatrix_input, sys.argv[1].replace(".csv", "."+sys.argv[3]+".deep_pdistances.csv").replace("samples/", "distances/"), included_nodes) # output distances to file
+    output_distances(adjmatrix_input,
+                     sys.argv[1].replace(".csv", "." + sys.argv[3] + ".deep_pdistances.csv").replace("samples/",
+                                                                                                     "distances/"),
+                     included_nodes_list)  # output distances to file
 
-    #print_adjmatrix(adjmatrix_input, included_nodes) # print matrix for debug
+    # print_adjmatrix(adjmatrix_input, included_nodes) # print matrix for debug
