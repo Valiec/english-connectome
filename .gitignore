@@ -1,6 +1,12 @@
 # debug file, not the processed data
-word_data_out_raw.txt
+data/word_data_out_raw.txt
 .DS_Store
 **/.DS_Store
 .idea/*
 .idea/**
+venv/**
+venv/*
+__pycache__/**
+__pycache__/*
+logs/**
+logs/*

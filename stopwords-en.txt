@@ -1296,3 +1296,9 @@ za
 zero
 zm
 zr
+relating
+form
+manner
+pertain
+quality
+condition
