@@ -1,3 +1,7 @@
+# Removes stopwords from a graph
+
+# Usage python clean_stopwords.py <input file> <output file>
+
 import sys
 
 stop_words = set()

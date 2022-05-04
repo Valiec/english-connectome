@@ -1,3 +1,8 @@
+# Plots the scatter plot of average etymological vs. semantic distances in the paper
+
+# Usage python graph_avgs.py <input file>
+
+
 import sys
 import matplotlib.pyplot as plt
 

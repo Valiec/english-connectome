@@ -1,3 +1,7 @@
+# Takes two sets of edges and returns the intersection
+
+# Usage python intersect.py <file 1> <file 2>
+
 import sys
 
 node_list = {}

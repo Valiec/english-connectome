@@ -1,3 +1,7 @@
+# Turns a set of edges into a DOT file for Graphvis
+
+# Usage python graph_network.py <input file>
+
 import networkx as nx
 import sys
 

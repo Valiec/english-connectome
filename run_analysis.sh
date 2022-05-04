@@ -1,3 +1,7 @@
+# Performs the main analysis described in the paper and produces the 720 mean etymological and semantic distances
+
+# Usage ./run_analysis.sh
+
 python3 sem_links.py rawData/words.txt;
 
 python3 etym_links.py rawData/etymology.csv -;

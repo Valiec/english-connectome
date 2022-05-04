@@ -1,3 +1,7 @@
+# Plots the 2x2 sample size vs. edge count plots in the paper
+
+# Usage python plot_2by2.py <file 1> <file 2> <file 3> <file 4>
+
 import sys
 import matplotlib.pyplot as plt
 

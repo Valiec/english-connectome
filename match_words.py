@@ -1,3 +1,5 @@
+# library for sem_links.py
+
 def check_word_match(word1, word2_list):
     """checks for 2 words matching (placeholder for handling inflection)
 

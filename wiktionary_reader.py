@@ -1,3 +1,5 @@
+# library for sem_links.py
+
 import json
 from wiktionary_parsing import *
 

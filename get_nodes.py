@@ -1,3 +1,8 @@
+# Gets the list of nodes for a graph
+
+# Usage python get_nodes.py <input file>
+
+
 import sys
 
 

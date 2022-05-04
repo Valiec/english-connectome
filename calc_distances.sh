@@ -1,3 +1,7 @@
+# Perform distance calculations for run_analysis.sh
+
+# Usage ./calc_distances.sh
+
 # all etym 2500 (1-80)
 ./analyse_run.sh data/sem_links_nodes_etym_links_nodes_intersected.txt data/sem_links.csv data/etym_links.csv 80 2500 0
 

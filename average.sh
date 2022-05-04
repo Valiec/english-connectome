@@ -1,3 +1,7 @@
+# Averages multiple sets of distances
+
+# Usage ./average.sh <starting sample number> <ending sample number> <output name>
+
 echo "sample,sem_avg,etym_avg" > data/$3.csv # write header (and blank file if it exists)
 for i in `seq $1 $2`; do # for all samples
 	echo "Processing $i" # log

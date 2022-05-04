@@ -1,3 +1,7 @@
+# Gets a list of edges within a given depth of a starting node, downsampled to a given fraction (but a given number of times more likely if directly connected to the starting node)
+
+# Usage python intersect.py <edge list> <start node> <depth> <downsampling factor> <direct connection multiplier> [node filter]
+
 import sys
 import random
 

@@ -1,3 +1,7 @@
+# Calculates the etymological connectome
+
+# Usage python etym_links.py <input file> [output name]
+
 import sys
 
 term_ids = {}  # map of term IDs to terms

@@ -1,3 +1,7 @@
+# Performs the parallel breadth-first search to calculate distances
+
+# Usage python bfs_parallel.py <edges file> <nodes file> <output name>
+
 import sys
 import multiprocessing
 from multiprocessing import Process

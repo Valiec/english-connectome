@@ -1,3 +1,7 @@
+# Averages 2 distances files and outputs a single line of CSV
+
+# Usage python average_file.py <input file 1> <input file 2>
+
 import sys
 
 # read in files

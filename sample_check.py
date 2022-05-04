@@ -1,3 +1,8 @@
+# Calculates sample size vs. edge count at a range of sample sizes
+
+# Usage: python intersect.py <edge list> <node list> <starting size> <ending size> <step> <plot header name> <output name>
+
+
 import sys
 import random
 import matplotlib.pyplot as plt

@@ -1,3 +1,7 @@
+# Preprocesses the Wiktionary data for sem_links.py
+
+# Usage python format_dataset.py <input path>
+
 import os
 import sys
 from wiktionary_reader import *

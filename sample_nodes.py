@@ -1,3 +1,7 @@
+# Produces random samples of nodes and edges for the run_analysis.sh pipeline
+
+# Usage python sample_nodes.py <node list> <edge list 1> <edge list 2> <sample count> <sample size> <node output prefix> <output prefix 1> <output prefix 2> [starting sample number]
+
 import sys
 import random
 
