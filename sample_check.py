@@ -82,8 +82,7 @@ for size in range(int(sys.argv[3]), int(sys.argv[4]), int(sys.argv[5])):
         for edge in new_edge_list:
             f.write(edge[0].strip() + "," + edge[1].strip() + "\n")
 
-    print(str(size) + ", " + str(new_edges) + ", " + str(
-        new_edges / float(size)))  # output average edge count and edge-to-node ratio
+    print(str(size) + "," + str(new_edges) + "," + str(new_edges / float(size)))  # output average edge count and edge-to-node ratio
 
     sizes.append(new_edges)
     size_ratios.append(new_edges / float(size))
