@@ -1,4 +1,4 @@
-# Performs the Pearson correlation
+# Performs the Mantel test
 
 # rscript mantel.R
 
