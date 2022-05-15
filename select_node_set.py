@@ -93,8 +93,7 @@ while i < radius:  # loop over nodes and select nodes within radius of starting 
                     if next_node+","+node in visited_edges:
                         continue
                     visited_edges.add(next_node+","+node)
-                if next_node != "type" and next_node != "characteristic":
-                    nodes_to_test_next.append(next_node)  # add children to list of nodes to visit
+                nodes_to_test_next.append(next_node)  # add children to list of nodes to visit
                 if node == start_node:
                     nodes_directly_connected.add(next_node)
             nodes_prelim.add(node)
