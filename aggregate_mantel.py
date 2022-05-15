@@ -1,3 +1,7 @@
+# Calculates the mean Mantel p-value and the number of p-values <0.05
+
+# Usage: python3 aggregate_mantel.py <data CSV>
+
 import sys
 
 mantel = []

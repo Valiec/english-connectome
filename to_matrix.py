@@ -1,3 +1,7 @@
+# Converts CSVs of pairwise semantic and etymological distances into a pair of distance matrices of the same sizes
+
+# Usage: python3 to_matrix.py <sem distances CSV> <etym distances CSV>
+
 import sys
 
 nodes_set = set()
