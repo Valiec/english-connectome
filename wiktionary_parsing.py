@@ -11,7 +11,7 @@ def find_word_in_partial_template(tmpl, startind):
     return ""
 
 
-def handle_wikitemplate(wikitemplate):  # TODO cleanup
+def handle_wikitemplate(wikitemplate):
     """Process a wikitemplate and locate any important information in it"""
     args = wikitemplate.replace("{", "").replace("}", "").split("|")
 
